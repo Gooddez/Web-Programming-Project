@@ -1,0 +1,123 @@
+:root {
+    --header-height: 300px;
+    --main-bg-color: #F2F0E6
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+body {
+    background-color: var(--main-bg-color);
+    width: 100vw;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* header */
+
+header {
+    /* position: fixed; */
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    background-color: #8B5E34;
+    height: var(--header-height);
+    margin-bottom: 20px;
+}
+
+.header-banner {
+    padding: 0 30px;
+    display: flex;
+    justify-content: end;
+    flex-grow: 0.75;
+    width: 100vw;
+}
+
+.header-banner .basket-container {
+    height: 100%;
+    width: 10%;
+    padding: 10px 20px;
+}
+
+.basket-button {
+    border-radius: 20px;
+    border: none;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+}
+
+.navigation-bar {
+    width: 100vw;
+    padding: 10px 100px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.navigation-bar .nav-item {
+    border-radius: 20px;
+    width: 300px;
+    aspect-ratio: 4.75/3;
+    background-color: white;
+}
+
+/* content */
+
+.content {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.menu-container {
+    position: relative;
+    width: 350px;
+    aspect-ratio: 5/4;
+    margin: 10px;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    border: 3px solid #C0954A;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-container img {
+    background-color: aliceblue;
+    width: 100%;
+    height: 100%;
+}
+
+.menu-container .status {
+    border: #8B5E34 2px solid;
+    border-radius: 20px;
+    font-size: 20px;
+    position: absolute;
+    padding: 0 10px;
+    text-align: left;
+    top: 10px;
+    left: 20px;
+}
+
+.text-container {
+    gap: 10px;
+    position: absolute;
+    left: 20px;
+    bottom: 10px;
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
