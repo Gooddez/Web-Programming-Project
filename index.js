@@ -44,9 +44,11 @@ app.get("/menu/:id", (req, res) => {
 app.get("/detail", (req, res) => {
     let id = req.query.id
     // Use LEFT JOIN so menus without options still return, and use parameter binding
+    
     let sql = `SELECT m.menu_id,
                        m.menu_name,
                        m.menu_image,
+                       m.menu_description,
                        mo.option_id,
                        co.option_name,
                        ov.value_name,

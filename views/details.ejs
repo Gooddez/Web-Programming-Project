@@ -1,32 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detail</title>
+    <link rel="stylesheet" href="/details.css">
 </head>
 <body>
-    <h2>THIS IS DETAIL</h2>
-    <% let exist = [] %>
-    <% detailData.forEach(item => { %>
-        <div class="detail-container">
-            <% if (exist.length === 0) {%>
-                <img src="/image/<%= item.menu_image.slice(0,-4) %>.png" alt="<%= item.menu_image.slice(0,-4) %>.png">
-                <div class="detail-desc"><h2><%= item.menu_name %></h2>
-            <% } %>
-
-            <% if (!(item.option_id in exist))  {%>
-                <p>Option: <%= item.option_name %></p>
-                <p>Value: <%= item.value_name %></p>
-                <p>Extra Price: <%= item.extra_price %></p>
-            <% } else { %>
-                <p>Value: <%= item.value_name %></p>
-                <p>Extra Price: <%= item.extra_price %></p>
-            <% } %>
-            </div>
-            <% exist.push(item.option_id) %>
-            <% console.log(exist) %>
-        </div>
+    <% let optionMap = {}; %> <% detailData.forEach(item => { %>
+    <% if (!optionMap[item.option_id]) { %> <% optionMap[item.option_id] = {
+        option_name: item.option_name, values: [] }; %>
+    <% } %> 
+    <% optionMap[item.option_id].values.push({ value_name: item.value_name,
+        extra_price: item.extra_price }); %>
     <% }) %>
+
+    <div class="detail-container">
+        <div class="detail-img">
+            <% if (detailData && detailData[0]) { %>
+                <img src="/image/<%= detailData[0].menu_image.slice(0,-4) %>.png" alt="<%= detailData[0].menu_image.slice(0,-4) %>.png"/>
+            <% } %>
+        </div>
+        <div class="detail-info">
+            <% if (detailData && detailData[0]) { %>
+                <div class="detail-text">
+                    <h2><%= detailData[0].menu_name %></h2>
+                    <p><%= detailData[0].menu_description %></p>
+                </div>
+            <% } %>
+                
+            <div class="detail-options">
+                <% Object.keys(optionMap).forEach(function(optId) { %>
+                <div class="detail-option-contain">
+                    <p class="option-name"><%= optionMap[optId].option_name %></p>
+                    <div class="in-option">
+                        <% optionMap[optId].values.forEach(function(v) { %>
+                            <div class="extra">
+                                <p><%= v.value_name %></p>
+                                <p>+<%= v.extra_price %> ฿</p>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            <% }) %>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
