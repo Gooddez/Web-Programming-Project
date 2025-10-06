@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menus</title>
     <link rel="stylesheet" href="/css/menus.css">
 </head>
+
 <body>
     <header>
         <div class="header-banner">
@@ -21,22 +23,94 @@
     </header>
     <div class="header-gap"></div>
     <section class="content">
-        <% menuData.forEach(menu => { %>
-            <a href="/detail?id=<%= menu.menu_id %>">
-                <div class="menu-container">
-                    <div class="status">In Stock</div>
-                    <img src="/image/<%= menu.menu_image.slice(0,-4) %>.png" alt="<%= menu.menu_image.slice(0,-4) %>.png">
-                    <div class="text-container">
-                        <span><%= menu.menu_name %></span>
-                        <span><%= menu.menu_price %></span>
-                    </div>
+        <% menuData.forEach(menu=> { %>
+            <div class="menu-container" id="menu-container-<%= menu.menu_id %>"
+                onclick="showDetail(<%= menu.menu_id %>)">
+                <div class="status">In Stock</div>
+                <img src="/image/<%= menu.menu_image.slice(0,-4) %>.png" alt="<%= menu.menu_image.slice(0,-4) %>.png">
+                <div class="text-container">
+                    <span>
+                        <%= menu.menu_name %>
+                    </span>
+                    <span>
+                        <%= menu.menu_price %>
+                    </span>
                 </div>
-            </a>
-        <% }) %>
+            </div>
+            <% }) %>
     </section>
+    <% menuData.forEach(menu=> { %>
+        <div class="detail-container" id="detail-container-<%= menu.menu_id %>">
+            <button onclick="closeDetail(<%= menu.menu_id %>)" class="close-detail-button"></button>
+            <img src="/image/<%= menu.menu_image.slice(0,-4) %>.png" alt="<%= menu.menu_image.slice(0,-4) %>.png">
+            <div>
+                <form id="customize-form-<%= menu.menu_id %>"></form>
+            </div>
+        </div>
+        <% }) %>
 </body>
+
 </html>
 
 <script>
+    function showDetail(id) {
+        const detail = document.getElementById(`detail-container-${id}`)
+        const form = document.getElementById(`customize-form-${id}`)
+        if (!form.innerHTML){
+            const endpoint = "http://localhost:3000/api/detail";
+            const sendPackage = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    menuID: id
+                })
+            }
+            fetch(endpoint, sendPackage)
+                .then(response => response.json())
+                .then(options => {
+                    let exist = []
+                    let count = 1
+                    options.forEach(item => {
+                        if (exist.includes(item.option_id)) {
+                            const parent = document.getElementById(`form-div-${id}-${ item.option_id }`)
+                            parent.innerHTML += `
+                            <input type="radio" id="${ item.option_id } " name="${ item.option_id } " value="${ item.value_id } ">
+                            <label for="${item.option_id}">
+                                <span>
+                                    ${item.value_name}
+                                </span>
+                                <span>
+                                    ${item.extra_price} THB
+                                </span>
+                            </label>`
+                        } else {
+                            exist.push(item.option_id)
+                            form.innerHTML += `
+                            <div id="form-div-${id}-${ item.option_id }">
+                                <input type="radio" id="${ item.option_id } " name="${ item.option_id } " value="${ item.value_id } ">
+                                <label for="${item.option_id}">
+                                    <span>
+                                        ${item.value_name}
+                                    </span>
+                                    <span>
+                                        ${item.extra_price} THB
+                                    </span>
+                                </label>
+                            </div>`
+                        }
+                        count ++
+                    })
+                    exist = []
+                })
+                .catch(err => console.log(err))
+        }
+        detail.style.display = "block"
+    }
 
+    const closeDetail = (id) => {
+        const detail = document.getElementById(`detail-container-${id}`)
+        detail.style.display = "none"
+    } 
 </script>

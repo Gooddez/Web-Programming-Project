@@ -137,3 +137,23 @@ header {
     display: flex;
     flex-direction: column;
 }
+/*  */
+
+.detail-container {
+    display: none;
+    position: fixed;
+    inset: 50px 300px;
+    background-color: #fff;
+}
+
+.detail-container img {
+    width: 50px;
+    aspect-ratio: 1/1;
+}
+
+.close-detail-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}

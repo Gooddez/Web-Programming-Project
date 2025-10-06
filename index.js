@@ -4,6 +4,7 @@ const app = express();
 const port = 3000;
 const sqlite3 = require("sqlite3").verbose();
 
+app.use(express.json());
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
@@ -23,6 +24,22 @@ app.get("/api/menus", (req, res) => {
         res.json(rows)
     });
 });
+
+app.post("/api/detail", (req, res) => {
+    const ID = req.body.menuID;
+    const sql = "SELECT * FROM menuOption JOIN OptionValue USING (option_id) WHERE menu_id = ?";
+    console.log(sql)
+    console.log(ID)
+
+    db.all(sql, [ID], (err, rows) => {
+        if (err) {
+            console.log(err.message)
+        }
+        console.log(rows)
+        res.json(rows)
+    });
+});
+
 
 app.get("/", (req, res) => {
     res.render("home");
