@@ -11,106 +11,179 @@
 <body>
     <header>
         <div class="header-banner">
-            <div class="basket-container"><button class="basket-button"></button></div>
+            <div><a href="/menu/1" class="nav-item"></a></div>
+            <div><a href="/menu/2" class="nav-item"></a></div>
+            <div><a href="/menu/3" class="nav-item"></a></div>
+            <div><a href="/menu/4" class="nav-item"></a></div>
+            <div id="cart" class="cart-button" onclick="showBasket()">ตะกร้า</div>
         </div>
+
+        <div id="cartContainer" class="cart-container">
+            </div>
+
         <div class="navigation-bar">
-            <a href="/menu/1" class="nav-item nav-image1"></a>
-            <a href="/menu/2" class="nav-item"></a>
-            <a href="/menu/3" class="nav-item"></a>
-            <a href="/menu/4" class="nav-item"></a>
+            
         </div>
-        <div class="basket"></div>
     </header>
+
     <div class="header-gap"></div>
     <section class="content">
         <% menuData.forEach(menu=> { %>
             <div class="menu-container" id="menu-container-<%= menu.menu_id %>"
-                onclick="showDetail(<%= menu.menu_id %>)">
+                onclick="showDetail('<%= menu.menu_id %>')">
                 <div class="status">In Stock</div>
-                <img src="/image/<%= menu.menu_image.slice(0,-4) %>.png" alt="<%= menu.menu_image.slice(0,-4) %>.png">
+                <img src="/image/<%= menu.menu_image %>" alt="<%= menu.menu_image %>">
                 <div class="text-container">
-                    <span>
-                        <%= menu.menu_name %>
-                    </span>
-                    <span>
-                        <%= menu.menu_price %>
-                    </span>
+                    <span><%= menu.menu_name %></span>
+                    <span><%= menu.menu_price %></span>
                 </div>
             </div>
-            <% }) %>
+        <% }) %>
     </section>
+
     <% menuData.forEach(menu=> { %>
         <div class="detail-container" id="detail-container-<%= menu.menu_id %>">
-            <button onclick="closeDetail(<%= menu.menu_id %>)" class="close-detail-button"></button>
-            <img src="/image/<%= menu.menu_image.slice(0,-4) %>.png" alt="<%= menu.menu_image.slice(0,-4) %>.png">
-            <div>
-                <form id="customize-form-<%= menu.menu_id %>"></form>
+            <button onclick="closeDetail('<%= menu.menu_id %>')" class="close-detail-button">X</button>
+            <img src="/image/<%= menu.menu_image %>" alt="<%= menu.menu_image %>">
+            <div class="right-detail-container">
+                <div class="detail-name-container">
+                    <h2><%= menu.menu_name %></h2>
+                    <p><%= menu.menu_description %></p>
+                </div>
+
+                <div id="form-container-<%= menu.menu_id %>" class="form-container">
+                    <form action="/api/add-to-cart" id="customize-form-<%= menu.menu_id %>" class="customize-detail"></form>
+                    
+                    <div class="price" id="price-<%= menu.menu_id %>" data-normalprice="<%= menu.menu_price %>">
+                        Price: <%= menu.menu_price %> THB
+                    </div>
+                        </div>
             </div>
         </div>
-        <% }) %>
+    <% }) %>
 </body>
-
-</html>
 
 <script>
     function showDetail(id) {
-        const detail = document.getElementById(`detail-container-${id}`)
-        const form = document.getElementById(`customize-form-${id}`)
-        if (!form.innerHTML){
+        const detail = document.getElementById(`detail-container-${id}`);
+        const form = document.getElementById(`customize-form-${id}`);
+
+        if (!form.innerHTML) {
             const endpoint = "http://localhost:3000/api/detail";
             const sendPackage = {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    menuID: id
-                })
-            }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ menuID: id })
+            };
+
             fetch(endpoint, sendPackage)
                 .then(response => response.json())
                 .then(options => {
-                    let exist = []
-                    let count = 1
-                    options.forEach(item => {
-                        if (exist.includes(item.option_id)) {
-                            const parent = document.getElementById(`form-div-${id}-${ item.option_id }`)
-                            parent.innerHTML += `
-                            <input type="radio" id="${ item.option_id } " name="${ item.option_id } " value="${ item.value_id } ">
-                            <label for="${item.option_id}">
-                                <span>
-                                    ${item.value_name}
-                                </span>
-                                <span>
-                                    ${item.extra_price} THB
-                                </span>
-                            </label>`
-                        } else {
-                            exist.push(item.option_id)
-                            form.innerHTML += `
-                            <div id="form-div-${id}-${ item.option_id }">
-                                <input type="radio" id="${ item.option_id } " name="${ item.option_id } " value="${ item.value_id } ">
-                                <label for="${item.option_id}">
-                                    <span>
-                                        ${item.value_name}
-                                    </span>
-                                    <span>
-                                        ${item.extra_price} THB
-                                    </span>
-                                </label>
-                            </div>`
+                    // Group options by their name/id for easier processing
+                    const optionGroups = options.reduce((groups, item) => {
+                        const key = item.option_id;
+                        if (!groups[key]) {
+                            groups[key] = {
+                                name: item.option_name,
+                                values: []
+                            };
                         }
-                        count ++
-                    })
-                    exist = []
+                        groups[key].values.push(item);
+                        return groups;
+                    }, {});
+
+                    // FIX #3: Build HTML in a string first for performance
+                    let formHTML = '';
+                    for (const optionId in optionGroups) {
+                        const group = optionGroups[optionId];
+                        const isCheckbox = group.values.some(v => v.option_id === 4); // Example check
+                        const inputType = isCheckbox ? 'checkbox' : 'radio';
+
+                        formHTML += `<div class="option-div"><h3>${group.name}</h3>`;
+                        group.values.forEach(item => {
+                            formHTML += `
+                                <div class='select-option'>
+                                    <input type="${inputType}" id="value-${item.value_id}" name="option-${item.option_id}" value="${item.extra_price}">
+                                    <label for="value-${item.value_id}">
+                                        <span>${item.value_name}</span>
+                                        <span>+${item.extra_price} THB</span>
+                                    </label>
+                                </div>`;
+                        });
+                        formHTML += `</div>`;
+                    }
+                    form.innerHTML = formHTML;
+
+                    // FIX #4: Target the correct, unique container for the button
+                    const formContainer = document.getElementById(`form-container-${id}`);
+                    if (!formContainer.querySelector('.add-to-cart-button')) {
+                        const submitButton = document.createElement("button");
+                        submitButton.type = "submit";
+                        submitButton.form = `customize-form-${id}`;
+                        submitButton.textContent = "เพิ่มลงตะกร้า";
+                        submitButton.className = "add-to-cart-button";
+                        formContainer.appendChild(submitButton);
+                    }
+                    
+                    // Add the event listener just once, after creating the form
+                    form.addEventListener('change', () => {
+                        const priceContainer = document.getElementById(`price-${id}`);
+                        const basePrice = parseInt(priceContainer.dataset.normalprice, 10);
+                        let totalPrice = basePrice;
+
+                        const checkedInputs = form.querySelectorAll('input:checked');
+                        checkedInputs.forEach(input => {
+                            totalPrice += parseInt(input.value, 10);
+                        });
+
+                        priceContainer.innerText = `Price: ${totalPrice} THB`;
+                    });
                 })
-                .catch(err => console.log(err))
+                .catch(err => console.error("Error fetching details:", err));
         }
-        detail.style.display = "block"
+        detail.style.display = "flex";
     }
 
     const closeDetail = (id) => {
-        const detail = document.getElementById(`detail-container-${id}`)
-        detail.style.display = "none"
-    } 
+        const detail = document.getElementById(`detail-container-${id}`);
+        detail.style.display = "none";
+    }
+
+    function showBasket() {
+        const cartContainer = document.getElementById("cartContainer");
+        const endpoint = "http://localhost:3000/api/cart";
+
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                let total = 0;
+                let content = `<button onclick="closeCart()" class="close-detail-button">ปิด</button><h2>ตะกร้าสินค้า</h2>`;
+                
+                if (data.length === 0) {
+                    content += `<p>Your cart is empty.</p>`;
+                } else {
+                    data.forEach(item => {
+                        const itemTotal = item.menu_price + item.extra_price;
+                        total += itemTotal;
+                        content += `
+                            <div class="cart-item">
+                                <span>${item.menu_name}</span>
+                                <span>${itemTotal} THB</span>
+                            </div>`;
+                    });
+                    content += `<div class="cart-total"><strong>Total: ${total} THB</strong></div>`;
+                }
+                
+                // FIX #5: Update the correct container
+                cartContainer.innerHTML = content;
+                cartContainer.style.display = "flex"; // Use flex to be consistent
+            })
+            .catch(err => console.error("Error fetching cart:", err));
+    }
+
+    const closeCart = () => {
+        const cart = document.getElementById("cartContainer");
+        cart.style.display = "none";
+    }
 </script>
+</html>
