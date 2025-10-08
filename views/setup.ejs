@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting Up</title>
+</head>
+
+<body>
+    <div
+        style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 95vh; margin: 0; padding: 0;">
+
+        <form onsubmit="setTableId(event)">
+            <input type="text" name="table-ID" placeholder="SET THIS DEVICE ID ONCE! ex. 1" style="width: 500px;">
+            <button type="submit">Create Table ID</button>
+        </form>
+    </div>
+
+    <script>
+        function setTableId(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const tableId = formData.get('table-ID');
+            localStorage.setItem("tableID", parseInt(tableId))
+            console.log("Set localStorage Success")
+            window.location.href = `/`;
+        }
+    </script>
+</body>
+
+</html>

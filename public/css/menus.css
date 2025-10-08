@@ -17,7 +17,6 @@ a {
 
 body {
     background-color: var(--main-bg-color);
-    width: 100vw;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
@@ -54,14 +53,6 @@ header {
     padding: 10px 20px;
 }
 
-.basket-button {
-    border-radius: 20px;
-    border: none;
-    background-color: white;
-    height: 100%;
-    width: 100%;
-}
-
 .navigation-bar {
     width: 100vw;
     padding: 10px 100px;
@@ -82,14 +73,6 @@ header {
     width: 100%;
     height: 100%;
     border-radius: 20px;
-}
-
-/* basket */
-.basket {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
 }
 
 /* content */
@@ -203,22 +186,6 @@ header {
     justify-items: center;
 }
 
-/* .customize-detail {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    gap: 20px;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    border: 3px solid #C0954A;
-    border-radius: 20px;
-    background-color: #F9F6EE;
-    scroll-behavior: smooth;
-} */
-
 .option-div {
     border: 2px solid #C0954A;
     border-radius: 20px;
@@ -229,17 +196,6 @@ header {
     flex-direction: column;
     gap: 10px;
 }
-
-/* .form-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    padding: 20px;
-    gap: 20px;
-    align-items: center;
-    justify-items: center;
-    width: 100%;
-} */
 
 
 .form-container {
