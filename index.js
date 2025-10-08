@@ -52,9 +52,11 @@ app.post("/api/detail", (req, res) => {
         res.json(rows);
     });
 });
-
+// name":"${item.value_name}", "price":${item.extra_price
 app.post("/api/get-cart", (req, res) => {
+    req.session.cart = {"menu_name": "Espresso", "price" : 90 ,"option": [{"name":"ปั่น", "price":10},{"name":"นม", "price":0}]}
     const cart = req.session.cart || [];
+    console.log(cart)
     res.json(cart);
 });
 

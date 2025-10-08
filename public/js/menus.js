@@ -100,14 +100,28 @@ const closeDetail = (id) => {
     detail.style.display = "none";
 };
 
+
+// CART :DD
 function showCart() {
-    const cartContainer = document.getElementById("cartContainer");
-    endpoint = "http://localhost:3000/api/get-cart";
-    fetch(endpoint)
-        .then((response) => response.json())
-        .then((cart) => {
-            cartContainer.style.display = "flex";
-        });
+    const cartIcon = document.getElementById('cart')
+    const cart = document.getElementById(`cart-container`);
+
+    if (!cart.innerHTML) {
+        const endpoint = "http://localhost:3000/api/get-cart";
+        const sendPackage = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" } 
+        };
+
+        fetch(endpoint, sendPackage)
+            .then((response) => response.json())
+            .then((item) => {
+                console.log(item)
+                cart += ``
+            })
+            .catch((err) => console.error("Error fetching details:", err));
+    }
+    cart.style.display = "flex";
 }
 
 const closeCart = () => {
