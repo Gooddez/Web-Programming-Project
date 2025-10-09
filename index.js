@@ -54,49 +54,35 @@ app.post("/api/detail", (req, res) => {
 });
 // name":"${item.value_name}", "price":${item.extra_price
 app.post("/api/get-cart", (req, res) => {
-    req.session.cart = {"menu_name": "Espresso", "price" : 90 ,"option": [{"name":"ปั่น", "price":10},{"name":"นม", "price":0}]}
     const cart = req.session.cart || [];
-    console.log(cart)
+    console.log(cart);
     res.json(cart);
 });
-
 
 app.get("/add-to-cart", (req, res) => {
     const all = req.query;
     if (!req.session.cart) {
         req.session.cart = [];
     }
-    const options = []
+    console.log(all);
+    const options = [];
     for (const key in all) {
-        if (key !== "menu_id") {
-            if (key === "4" && Array.isArray(all[key])) {
-                all[key].forEach(v => {
-                    options.push(JSON.parse(v))
-                })
+        if (!["menu_name", "menu_id", "totalPrice"].includes(key)) {
+            if (["3", "4"].includes(key) && Array.isArray(all[key])) {
+                all[key].forEach((v) => {
+                    options.push(JSON.parse(v));
+                });
             } else {
-                options.push(JSON.parse(all[key]))
+                options.push(JSON.parse(all[key]));
             }
         }
     }
     const menu_id = all.menu_id;
-    req.session.cart.push({ menu_id, options });
-    console.log(req.session.cart, "added item to cart");
+    const menu_name = all.menu_name;
+    const totalPrice = all.totalPrice;
+    req.session.cart.push({ menu_id, menu_name, totalPrice, options });
     res.redirect("/menus");
 });
-
-
-// app.get("/add-to-cart", (req, res) => {
-//     console.log(req.query)
-
-//     const id = req.query;
-
-//     if (!req.session.cart) {
-//         req.session.cart = [];
-//     }
-//     req.session.cart.push(id);
-//     console.log(req.session.id, req.session.cart, "added item to cart")
-//     res.redirect("/menus")
-// });
 
 app.get("/", (req, res) => {
     res.render("home");
@@ -112,26 +98,7 @@ app.get("/menus", (req, res) => {
         .catch((err) => console.log(err));
 });
 
-app.get("/menu/:id", (req, res) => {
-    const menuID = req.params.id;
-    const endpoint = "http://localhost:3000/api/menus";
-    fetch(endpoint)
-        .then((response) => response.json())
-        .then((menus) => {
-            const menu = menus.filter((item) =>
-                `${item.menu_id}`.startsWith(`${menuID}`)
-            );
-            console.log(menuID);
-            console.log(menu);
-            if (menu) {
-                res.render("menus", { menuData: menu });
-            } else {
-                res.status(404).send("Menu not found");
-            }
-        })
-        .catch((err) => console.log(err));
-});
-
+app.get("/payment", (req, res) => {});
 
 app.listen(port, (err) => {
     if (err) {

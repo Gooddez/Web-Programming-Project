@@ -12,6 +12,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Mitr", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    -ms-tap-highlight-color: transparent;
 }
 
 body {
@@ -48,7 +50,7 @@ header {
     align-items: center;
     justify-content: center;
     height: 100%;
-    box-shadow: inset 0 0 10px var(--primary-color);
+    box-shadow: inset 0 0 3px var(--primary-color);
     border: 2px solid var(--secondary-color);
     background-color: var(--main-background);
 }
@@ -153,10 +155,10 @@ header {
 
 }
 
-.menu-container:hover {
+/* .menu-container:hover {
     transform: scale(1.03);
     box-shadow: 0 0 15px var(--secondary-color);
-}
+} */
 
 .menu-container img{
     width: 100%;
@@ -183,5 +185,183 @@ header {
     padding-right: 30px;
 }
 
+/* detail */
+
+.detail-container {
+    position: fixed;
+    background-color: var(--main-background);
+    display: flex;
+    width: 1000px;
+    height: 650px;
+    border: 2px solid var(--secondary-color);
+    border-radius: 20px;
+    align-items: center;
+    padding: 20px;
+    gap: 10px;
+    top: 40px;
+    display: none;
+}
+
+.detail-container .close-detail-button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 30px;
+    height: 30px;
+    background-color: var(--secondary-color);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.detail-container img {
+    width: 600px;
+    height: 600px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+}
+
+.right-detail-container {
+    flex-grow: 1;
+    gap: 7px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.detail-name-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    box-shadow: inset 0 0 4px var(--secondary-color);
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-container form {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    max-height: 460px;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid var(--primary-color);
+    box-shadow: inset 0 0 4px var(--secondary-color);
+    border-radius: 10px;
+}
+
+.price {
+    padding-top: 10px;
+    padding-left: 30px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--primary-color);
+}
+
+.add-to-cart-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--secondary-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Cart */
+
+.cart-container {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 350px;
+    height: 100%;
+    max-height: 700px;
+    padding: 15px;
+    background-color: var(--main-background);
+    border: 2px solid var(--secondary-color);
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 200;
+    border-radius: 5px;
+}
+
+.close-cart-button {
+    position: absolute;
+    width: 25px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background-color: var(--secondary-color);
+}
+
+.cart-item-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cart-item {
+    padding: 5px 10px;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #c0954a;
+}
+
+.cart-item .menu-name {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.total-price-container {
+    padding: 5px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.total-price-container a {
+    text-decoration: none;
+    flex-grow: 0.6;
+    color: white;
+}
+
+.total-price-container .payment-button {
+    width: 100%;
+    text-align: center;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    padding: 10px 10px;
+}
 
 
