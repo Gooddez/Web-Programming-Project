@@ -1,27 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>payment</title>
+    <link rel="stylesheet" href="/css/payment.css">
 </head>
+
 <body>
     <header>
         <div class="header-banner">
             <h1>ROBUX CAFE</h1>
             <span>Your favorite place for coffee</span>
         </div>
-        <div class="navigation-bar">
-            <a href="#"><div class="nav-item">กาแฟ</div></a>
-            <a href="#"><div class="nav-item">ชา</div></a>
-            <a href="#"><div class="nav-item">เบเกอร์รี่</div></a>
-            <a href="#"><div class="nav-item">สมูทตี้</div></a>
-        </div>
-        <div class="cart-button-container">
-            <div id="cart" class="cart-button" onclick="showCart()">
-                <img src="https://img.icons8.com/?size=100&id=ldYAIOBZuEdB&format=png&color=FFFFFF" alt="">
-            </div>
-        </div>
     </header>
+
+    <div class="selection-payment-container">
+        <h1>เลือกวิธีชำระเงิน</h1>
+        <div class="sub-payment-container">
+            <div class="payment-option" onclick="payQR()">พร้อมเพย์ (PromptPay)</div>
+            <div class="payment-option" onclick="payCash()">เงินสด (Cash)</div>
+        </div>
+    </div>
+
+    <div class="pay-cash" id="pay-cash">
+        <h1>กรุณาชำระเงินที่ cashier</h1>
+        <div class="button-like" onclick="confirmCash()">ตกลง</div>
+        <div class="close-button" onclick="closecash()">x</div>
+    </div>
+    <div class="pay-qr" id="pay-qr">
+        <img src="/image/qrcode/qrcode.png" alt="">
+        <div class="button-like" onclick="confirmQR()">ตกลง</div>
+        <div class="close-button" onclick="closeQR()">x</div>
+    </div>
 </body>
+
 </html>
+
+<script>
+    function payCash() {
+        const element = document.getElementById("pay-cash")
+        element.style.display = "flex"
+    }
+
+    function payQR() {
+        const element = document.getElementById("pay-qr")
+        element.style.display = "flex"
+    }
+
+    function closecash() {
+        const element = document.getElementById("pay-cash")
+        element.style.display = "none"
+    }
+
+    function closeQR() {
+        const element = document.getElementById("pay-qr")
+        element.style.display = "none"
+    }
+
+    function confirmQR() {
+        const table = localStorage.getItem("tableID");
+        if (table) {
+            console.log('here')
+            window.location.href = `/add-order/${table}`;
+        } else {
+            alert("No table ID found!");
+        }
+    }
+
+    function confirmCash() {
+        const table = localStorage.getItem("tableID");
+        if (table) {
+            console.log('here')
+            window.location.href = `/add-waiting-order/${table}`;
+        } else {
+            alert("No table ID found!");
+        }
+    }
+</script>
