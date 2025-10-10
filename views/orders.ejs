@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barista</title>
-    <link rel="stylesheet" href="/css/barista.css">
+    <title>Orders</title>
+    <link rel="stylesheet" href="/css/orders.css">
 </head>
 <body>
-    <div id="page" class="container-order">
+    <div class="container-order">
         <% data.forEach(item => { %>
             <div class="order">
                 <h2>หมายเลขออเดอร์ <%= item.orderid %> โต๊ะ : <%= item.table_id %></h2>
@@ -27,17 +27,9 @@
                         </div>
                     <% }); %>
                 </div>
-                <div class="confirm">
-                    <button class="confirm-action-button" data-href="/delete/<%= item.orderid %>">
-                        ยืนยัน
-                    </button>
-    
-                    <button class="confirm-action-button" data-href="/delete/<%= item.orderid %>">
-                        ยกเลิก
-                    </button>
-                </div>
             </div>
         <% }); %>
-    <script src="/js/barista.js"></script>
+        <a href="/"><div class="back-to-home-button">กลับหน้าเมนู</div></a>
+    </div>
 </body>
 </html>
