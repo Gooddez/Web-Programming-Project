@@ -1,6 +1,9 @@
 function showItem(id) {
     // Select the container where all the details will be displayed
     const parent = document.getElementById("descContent");
+    const noText = document.getElementById("noOrderDetail");
+    noText.style.display = "none"
+    parent.innerHTML = ''
 
     // If the container doesn't exist, stop to prevent errors
     if (!parent) {
@@ -27,11 +30,17 @@ function showItem(id) {
                     menuContent.forEach(product => {
                         moreHTML += `
                             <div class="desc-text">
-                                <p><strong>${product.menu_name}</strong></p>
-                                <p>รายละเอียด : ${product.options.map(opt => opt.name).join(', ')}</p>
-                            </div>
-                            <p>${product.totalPrice} บาท</p>
-                        `;
+                                <p class="menu-name"><strong>${product.menu_name}</strong></p>`
+                        if (product.options.length === 0) {
+                            moreHTML += `<p>รายละเอียด : ไม่มีรายการปรับแต่ง</p>
+                                <p class="menu-price">${product.totalPrice} บาท</p>
+                            </div>`;
+                        } else {
+                            moreHTML += `<p>รายละเอียด : ${product.options.map(opt => opt.name).join(', ')}</p>
+                                <p class="menu-price">${product.totalPrice} บาท</p>
+                            </div>`;
+                        }
+                        
                     });
 
                     // Close the container for the item's details
@@ -43,7 +52,10 @@ function showItem(id) {
             parent.innerHTML = moreHTML;
 
             const show = document.getElementById(`item-${id}`)
-            show.style.display = "grid"
+            show.style.display = "flex"
+
+            const paid = document.getElementById("paid")
+            paid.href += `${id}`
         })
         .catch((err) => console.error("Error fetching details:", err));
 }

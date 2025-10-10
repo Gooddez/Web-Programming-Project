@@ -131,14 +131,25 @@ app.get("/payment", (req, res) => {
     res.render("payment");
 });
 
+app.get("/orders/:id", (req, res) => {
+    const id = req.params.id
+    let sql = `SELECT * FROM orders WHERE table_id = ${id}`
+
+    db.all(sql, (err, rows) => {
+        if (err) {
+            console.log(err)
+        }
+        console.log(rows)
+        res.render("orders", {data : rows});
+    })
+})
+
 app.get("/add-order/:table", (req, res) => {
     const cart = req.session.cart || [];
     const table = req.params.table;
-
-    const sql = `INSERT INTO orders (table_id, menu) VALUES (?, ?);`;
-
     const menuData = JSON.stringify(cart);
 
+    const sql = `INSERT INTO orders (table_id, menu) VALUES (?, ?);`;
     db.run(sql, [table, menuData], (err) => {
         if (err) {
             console.error(err.message);
@@ -200,8 +211,49 @@ app.get("/confirm", (req, res) => {
         .catch((err) => console.log(err));
 });
 
+app.get("/confirm/:id", (req, res) => {
+    const id = req.params.id
+
+    let add = `INSERT INTO orders (table_id, menu)
+                SELECT table_id, menu
+                FROM waitingOrder
+                WHERE waiting_id = ?;`
+    db.run(add, [id],(err) => {
+        if (err) {
+            console.log(err)
+        }
+    })
+
+    let del = `DELETE FROM waitingOrder WHERE waiting_id = ?;`
+    db.run(del, [id],(err) => {
+        if (err) {
+            console.log(err)
+        }
+    })
+    res.redirect("/confirm")
+});
+
 app.get("/barista", (req, res) => {
-    res.render("barista");
+    let sql = `SELECT * FROM orders`
+
+    db.all(sql, (err, rows) => {
+        if (err) {
+            console.log(err)
+        }
+        console.log(rows)
+        res.render("barista", {data : rows});
+    })
+});
+
+app.get("/delete/:id", (req, res) => {
+    const id = req.params.id
+    let del = `DELETE FROM orders WHERE orderid = ?;`
+    db.run(del, [id], (err) => {
+        if (err) {
+            console.log(err)
+        }
+    })
+    res.redirect("/barista")
 });
 
 app.listen(port, (err) => {

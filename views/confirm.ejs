@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm</title>
     <link rel="stylesheet" href="/css/confirm.css">
-    <script src="/js/confirm.js"></script>
 </head>
 <body>
     <div class="container">
@@ -23,15 +22,18 @@
                     </div>
                 <% }); %>
             </div>
+            <a href="/emphome"><div class="back-to-home-button">กลับหน้าหลัก</div></a>
         </div>
         <div class="listDetail">
             <h3>รายละเอียดคำสั่งซื้อ ⇩</h3>
+            <p id="noOrderDetail">ไม่มีรายละเอียดออเดอร์</p>
             <div id="descContent" class="description">
             </div>
             <div class="payBtn">
-                <a href="#">ชำระเงิน</a>
+                <a id="paid" href="/confirm/">ชำระเงิน</a>
             </div>
         </div>
     </div>
+    <script src="/js/confirm.js"></script>
 </body>
 </html>
