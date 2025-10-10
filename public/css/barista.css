@@ -1,0 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=Mitr:wght@400;600&display=swap");
+
+:root {
+    --main-background: #f2f0e6;
+    --primary-color: #8b5e34;
+    --secondary-color: #c0954a;
+    --main-font-color: #000000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    width: 100%;
+    height: 100vh;
+    overflow-y: hidden;
+    background-color: var(--main-background);
+    font-family: "Mitr", sans-serif;
+}
+
+.container-order {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    margin-right: 15px;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+}
+
+.order {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-width: 400px;
+    max-width: 400px;
+    height: 750px;
+    margin: 15px;
+    padding: 20px 10px;
+    background-color: white;
+    border: 1px solid var(--secondary-color);
+    border-radius: 12px;
+}
+
+.order h2 {
+    /* font-weight: 500; */
+    text-align: start;
+    width: 320px;
+}
+
+.detail {
+    width: 90%;
+    height: 100%;
+    padding: 13px;
+    /* background-color: var(--main-background); */
+}
+
+.type {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+    width: 320px;
+    height: 30px;
+    background-color: var(--main-background);
+}
+
+.type span {
+    color: var(--primary-color);
+}
+
+.item-detail {
+    margin-bottom: 12px;
+    padding: 10px;
+    height: auto;
+    background-color: rgb(255, 255, 255);
+    border-left: 2px solid var(--primary-color);
+}
+
+.confirm {
+    width: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.confirm a {
+    text-decoration: none;
+    color: var(--main-background);
+    background-color: #c0954a;
+    padding: 10px 20px;
+    border-radius: 15px;
+    transition: 0.2s ease-in;
+}
+
+.confirm a:hover {
+    color: var(--secondary-color);
+    background-color: var(--main-background);
+    border: 1px solid var(--secondary-color);
+}

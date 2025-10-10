@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm</title>
+    <link rel="stylesheet" href="/css/confirm.css">
+    <script src="/js/confirm.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="list">
+            <h1>ยืนยันการชำระเงิน💸</h1>
+            <div class="list-container">
+                <% orders.forEach((item, index) => {%>
+                    <div id="<%= item.waiting_id %>" class="list-item-container" onclick="showItem('<%= item.waiting_id %>')">
+                        <div class="listItem">
+                            <div>Time: <%= new Date(item.created_at.replace(' ', 'T')).toLocaleTimeString('en-US') %></div>
+                            <div>Order No. <%= index + 1 %></div>
+                            <div>Table : <%= item.table_id %></div>
+                            <div>Total : <%= item.price %></div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+        <div class="listDetail">
+            <h3>รายละเอียดคำสั่งซื้อ ⇩</h3>
+            <div id="descContent" class="description">
+            </div>
+            <div class="payBtn">
+                <a href="#">ชำระเงิน</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
