@@ -93,6 +93,13 @@ function showDetail(id, name, price) {
                     priceContainer.innerText = `Price: ${totalPrice} THB`;
                     newPrice.value = totalPrice;
                 });
+                detail.addEventListener("click", (event) => {
+                    console.log(event.target)
+                    // if clicked outside the popup content
+                    if (!event.target.closest(".detail-container")) {
+                        detail.style.display = "none";
+                    }
+                });
             })
             .catch((err) => console.error("Error fetching details:", err));
     }
@@ -108,58 +115,89 @@ const closeDetail = (id) => {
 
 // CART :DD
 function showCart() {
-    const cartIcon = document.getElementById("cart");
-    const cart = document.getElementById("cart-container");
-    cart.innerHTML = "";
-    console.log(window.location.origin);
-    if (!cart.innerHTML) {
-        cart.innerHTML += `<button class="close-cart-button" onclick="closeCart()">X</button><h1>ตะกร้าสินค้า</h1><div class="cart-item-container" id="cart-item-container"></div>`;
-        const cartItemContainer = document.getElementById(
-            "cart-item-container"
-        );
-        // const endpoint = "http://localhost:3000/api/get-cart";
-        const endpoint = `${window.location.origin}/api/get-cart`;
-        const sendPackage = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-        };
+    const cartContainer = document.getElementById("cart-container");
+    cartContainer.innerHTML = ""; // Clear previous content
 
-        fetch(endpoint, sendPackage)
-            .then((response) => response.json())
-            .then((items) => {
-                if (!(items.length === 0)) {
-                    let finalPrice = 0;
-                    items.forEach((item) => {
-                        let itemCreate = "";
-                        itemCreate += `<div class="cart-item">
-                                        <p class="menu-name">รายการ : ${
-                                            item.menu_name
-                                        } x${1}</p>
-                                        <p style="margin-left: 7px;">รายละเอียดตัวเลือก : `;
-                        if (!(item.options.length === 0)) {
-                            item.options.forEach((value) => {
-                                itemCreate += `${value.name} `;
-                            });
-                        } else {
-                            itemCreate += `-`;
-                        }
-                        itemCreate += `</p><p>ราคา : ${item.totalPrice} บาท</p></div>`;
-                        cartItemContainer.innerHTML += itemCreate;
-                        finalPrice += parseInt(item.totalPrice);
-                    });
-                    const html = `<div class="total-price-container">
-                        <p>ราคารวม : ${finalPrice} บาท</p>
+    const endpoint = `${window.location.origin}/api/get-cart`;
+    fetch(endpoint, { method: "POST" })
+        .then((response) => response.json())
+        .then((items) => {
+            let cartHTML = `<button class="close-cart-button" onclick="closeCart()">X</button><h1>ตะกร้าสินค้า</h1><div class="cart-item-container" id="cart-item-container"></div>`;
+            cartContainer.innerHTML = cartHTML;
+            
+            const cartItemContainer = document.getElementById("cart-item-container");
+            let finalPrice = 0;
+
+            if (items.length === 0) {
+                cartItemContainer.innerHTML = "<p>ไม่มีรายการสินค้า</p>";
+            } else {
+                items.forEach((item) => {
+                    const itemTotalPrice = item.unitPrice * item.quantity;
+                    finalPrice += itemTotalPrice;
+
+                    let optionsHTML = item.options.map(opt => opt.name).join(', ') || '-';
+
+                    // Note the data-item-id attribute on the buttons
+                    cartItemContainer.innerHTML += `
+                        <div class="cart-item">
+                            <p class="menu-name">รายการ : ${item.menu_name}</p>
+                            <p style="margin-left: 7px;">รายละเอียดตัวเลือก : ${optionsHTML}</p>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateCartItemQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                                <span class="quantity-text">${item.quantity}</span>
+                                <button class="quantity-btn" onclick="updateCartItemQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                            </div>
+                            <p>ราคา : ${itemTotalPrice.toFixed(2)} บาท</p>
+                            <button class="remove-item-btn" onclick="removeCartItem('${item.id}')">X</button>
+                        </div>`;
+                });
+
+                // Add footer with total price and payment button
+                cartContainer.innerHTML += `
+                    <div class="total-price-container">
+                        <p>ราคารวม : ${finalPrice.toFixed(2)} บาท</p>
                         <a href="/payment"><div class="payment-button">ชำระเงิน</div></a>
                     </div>`;
-                    cart.innerHTML += html;
-                } else {
-                    let itemCreate = `<p>ไม่มีรายการสินค้า</p>`;
-                    cartItemContainer.innerHTML += itemCreate;
-                }
-            })
-            .catch((err) => console.error("Error fetching details:", err));
+            }
+        })
+        .catch((err) => console.error("Error fetching cart:", err));
+
+    cartContainer.style.display = "flex";
+}
+
+// NEW FUNCTION: Handles clicks on '+' and '-' buttons
+function updateCartItemQuantity(itemId, quantity) {
+    if (quantity < 1) {
+        removeCartItem(itemId); // If quantity drops to 0, remove the item
+        return;
     }
-    cart.style.display = "flex";
+
+    fetch(`${window.location.origin}/api/cart/update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId, quantity }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showCart(); // Refresh the cart display
+        }
+    });
+}
+
+// NEW FUNCTION: Handles removing an item from the cart
+function removeCartItem(itemId) {
+    fetch(`${window.location.origin}/api/cart/remove`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showCart(); // Refresh the cart display
+        }
+    });
 }
 
 const closeCart = () => {
@@ -169,11 +207,14 @@ const closeCart = () => {
 
 document.addEventListener("DOMContentLoaded", function () {
     const id = localStorage.getItem("tableID");
-    console.log(id)
+    console.log(id);
     const body = document.body;
     body.innerHTML += `<div class="table-id" id="table-id"><p>table : ${id}</p></div>`;
     if (id === "0") {
         const parent = document.getElementById("table-id");
-        parent.innerHTML += `<a href="/emphome"><div class="back-to-home-button">กลับหน้าหลัก</div></a>`;
+        parent.innerHTML += `<a href="/cashier"><div class="back-to-home-button">กลับหน้าหลัก</div></a>`;
+    } else {
+        const parent = document.getElementById("table-id");
+        parent.innerHTML += `<a href="/orders/${id}"><div class="back-to-home-button">Order</div></a>`;
     }
 });

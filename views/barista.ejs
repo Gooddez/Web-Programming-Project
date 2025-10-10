@@ -8,6 +8,9 @@
 </head>
 <body>
     <div id="page" class="container-order">
+        <% if (data.length === 0) { %>
+            <h1 class="txt">ยังไม่มีรายการ</h1>
+        <% } %>
         <% data.forEach(item => { %>
             <div class="order">
                 <h2>หมายเลขออเดอร์ <%= item.orderid %> โต๊ะ : <%= item.table_id %></h2>
@@ -19,10 +22,10 @@
                             <p class="menu-name"><%= product.menu_name %></p>
                             <% if (product.options.length === 0) { %>
                                 <p>รายละเอียด : ไม่มีรายการปรับแต่ง</p>
-                                <p class="menu-price"><%= product.totalPrice %> บาท</p>
+                                <p>จำนวน : <%= product.quantity %></p>
                             <% } else { %>
                                 <p>รายละเอียด : <%= product.options.map(opt => opt.name).join(', ') %></p>
-                                <p class="menu-price"><%= product.totalPrice %> บาท</p>
+                                <p>จำนวน : <%= product.quantity %></p>
                             <% } %>
                         </div>
                     <% }); %>

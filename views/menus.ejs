@@ -16,10 +16,10 @@
             <span>Your favorite place for coffee</span>
         </div>
         <div class="navigation-bar">
-            <a href="#"><div class="nav-item">กาแฟ</div></a>
-            <a href="#"><div class="nav-item">ชา</div></a>
-            <a href="#"><div class="nav-item">เบเกอร์รี่</div></a>
-            <a href="#"><div class="nav-item">สมูทตี้</div></a>
+            <a href="#category-1"><div class="nav-item">กาแฟ</div></a>
+            <a href="#category-2"><div class="nav-item">ชา</div></a>
+            <a href="#category-3"><div class="nav-item">เบเกอร์รี่</div></a>
+            <a href="#category-4"><div class="nav-item">สมูทตี้</div></a>
         </div>
         <div class="cart-button-container">
             <div id="cart" class="cart-button" onclick="showCart()">
@@ -31,41 +31,51 @@
     <div id="cart-container" class="cart-container"></div>
     <div class="payment"></div>
 
+    <div class="header-gap"></div>
 
-    <!-- <div class="header-gap"></div> -->
-    
-    <section class="content">
-        <% menuData.forEach(menu=> { %>
-            <div class="menu-container" id="menu-container-<%= menu.menu_id %>" <% if (menu.status === 'available') { %>onclick="showDetail('<%= menu.menu_id %>','<%= menu.menu_name %>','<%= menu.menu_price %>')"<% } %>>
-                <div class="status"><%= menu.status %></div>
-                <img src="/image/<%= menu.menu_image %>" alt="<%= menu.menu_image %>">
-                <div class="text-container">
-                    <span><%= menu.menu_name %></span>
-                    <span><%= menu.menu_price %></span>
-                </div>
+    <% category.forEach(item => { %>
+        <section class="category" id="category-<%= item.category_id %>">
+            <h1><%= item.category_name %></h1>
+            <div class="content">
+                <% menuData.forEach(menu=> { %>
+                    <% if (menu.category_id === item.category_id) { %>
+                        <div class="menu-container " id="menu-container-<%= menu.menu_id %>" <% if (menu.status === 'available') { %>onclick="showDetail('<%= menu.menu_id %>','<%= menu.menu_name %>','<%= menu.menu_price %>')"<% } %>>
+                            <% if (menu.status === 'unavailable') { %><div class="unavailable"></div><% } %>
+                            <div class="status"><%= menu.status %></div>
+                            <img src="/image/<%= menu.menu_image %>" alt="<%= menu.menu_image %>">
+                            <div class="text-container">
+                                <span><%= menu.menu_name %></span>
+                                <span><%= menu.menu_price %></span>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }) %>
             </div>
-        <% }) %>
-    </section>
+        </section>
+    <% }) %>
 
     <% menuData.forEach(menu=> { %>
-        <div class="detail-container" id="detail-container-<%= menu.menu_id %>">
-            <button onclick="closeDetail('<%= menu.menu_id %>')" class="close-detail-button">X</button>
-            <img src="/image/<%= menu.menu_image %>" alt="<%= menu.menu_image %>">
-            <div class="right-detail-container">
+        <div class="detail-overlay" id="detail-container-<%= menu.menu_id %>">
+            <div class="detail-container">
+                <button onclick="closeDetail('<%= menu.menu_id %>')" class="close-detail-button">X</button>
+                <img src="/image/<%= menu.menu_image %>" alt="<%= menu.menu_image %>">
+                <div class="right-detail-container">
                 <div class="detail-name-container">
                     <h2><%= menu.menu_name %></h2>
                     <p><%= menu.menu_description %></p>
                 </div>
-
+                
                 <div id="form-container-<%= menu.menu_id %>" class="form-container">
                     <form action="/add-to-cart" method="get" id="customize-form-<%= menu.menu_id %>" class="customize-detail"></form>
-                    
+                
                     <div class="price" id="price-<%= menu.menu_id %>" data-normalprice="<%= menu.menu_price %>">
-                        Price: <%= menu.menu_price %> THB
+                    Price: <%= menu.menu_price %> THB
                     </div>
+                </div>
                 </div>
             </div>
         </div>
     <% }) %>
+
 </body>
 </html>

@@ -89,42 +89,124 @@ app.put("/api/update-status/:id", (req, res) => {
     res.json({ message: "Menu updated successfully!" });
 });
 
+// new
+
+const generateCartItemId = (menu_id, options) => {
+    const optionKeys = options.map(o => o.name).sort().join('-');
+    return `${menu_id}-${optionKeys}`;
+};
+
 app.get("/add-to-cart", (req, res) => {
     const all = req.query;
     if (!req.session.cart) {
         req.session.cart = [];
     }
+
+    // Process options from the query
     const options = [];
     for (const key in all) {
         if (!["menu_name", "menu_id", "totalPrice"].includes(key)) {
             if (["3", "4"].includes(key) && Array.isArray(all[key])) {
-                all[key].forEach((v) => {
-                    options.push(JSON.parse(v));
-                });
+                all[key].forEach((v) => options.push(JSON.parse(v)));
             } else {
                 options.push(JSON.parse(all[key]));
             }
         }
     }
+    options.sort((a, b) => a.name.localeCompare(b.name)); // Sort for consistency
+
     const menu_id = all.menu_id;
     const menu_name = all.menu_name;
-    const totalPrice = all.totalPrice;
-    req.session.cart.push({ menu_id, menu_name, totalPrice, options });
+    const unitPrice = all.totalPrice; // This is the price for one unit
+
+    // Create a unique ID for this specific item configuration
+    const itemId = generateCartItemId(menu_id, options);
+
+    // Check if this exact item already exists in the cart
+    const existingItem = req.session.cart.find(item => item.id === itemId);
+
+    if (existingItem) {
+        // If it exists, just increase the quantity
+        existingItem.quantity += 1;
+    } else {
+        // If it's a new item, add it to the cart with quantity 1
+        req.session.cart.push({
+            id: itemId, // Unique ID for this configuration
+            menu_id,
+            menu_name,
+            unitPrice: parseFloat(unitPrice), // Price of a single item
+            options,
+            quantity: 1
+        });
+    }
     res.redirect("/menus");
 });
+
+// NEW ROUTE: To update item quantity
+app.post("/api/cart/update", (req, res) => {
+    const { itemId, quantity } = req.body;
+    if (req.session.cart) {
+        const cartItem = req.session.cart.find(item => item.id === itemId);
+        if (cartItem) {
+            cartItem.quantity = parseInt(quantity, 10);
+            res.json({ success: true, message: "Cart updated." });
+        } else {
+            res.status(404).json({ success: false, message: "Item not found." });
+        }
+    }
+});
+
+// NEW ROUTE: To remove an item from the cart
+app.post("/api/cart/remove", (req, res) => {
+    const { itemId } = req.body;
+    if (req.session.cart) {
+        req.session.cart = req.session.cart.filter(item => item.id !== itemId);
+        res.json({ success: true, message: "Item removed." });
+    }
+});
+
+// app.get("/add-to-cart", (req, res) => {
+//     const all = req.query;
+//     if (!req.session.cart) {
+//         req.session.cart = [];
+//     }
+//     const options = [];
+//     for (const key in all) {
+//         if (!["menu_name", "menu_id", "totalPrice"].includes(key)) {
+//             if (["3", "4"].includes(key) && Array.isArray(all[key])) {
+//                 all[key].forEach((v) => {
+//                     options.push(JSON.parse(v));
+//                 });
+//             } else {
+//                 options.push(JSON.parse(all[key]));
+//             }
+//         }
+//     }
+//     const menu_id = all.menu_id;
+//     const menu_name = all.menu_name;
+//     const totalPrice = all.totalPrice;
+//     req.session.cart.push({ menu_id, menu_name, totalPrice, options });
+//     res.redirect("/menus");
+// });
 
 app.get("/", (req, res) => {
     res.render("home");
 });
 
 app.get("/menus", (req, res) => {
-    const endpoint = "http://localhost:3000/api/menus";
-    fetch(endpoint)
-        .then((response) => response.json())
-        .then((menus) => {
-            res.render("menus", { menuData: menus });
-        })
-        .catch((err) => console.log(err));
+    const sql = `SELECT * FROM category`
+    db.all(sql, (err, rows) => {
+        if (err) {
+            console.log(err.message)
+        }
+        const endpoint = "http://localhost:3000/api/menus";
+        fetch(endpoint)
+            .then((response) => response.json())
+            .then((menus) => {
+                res.render("menus", { menuData: menus, category: rows});
+            })
+            .catch((err) => console.log(err));
+    })
 });
 
 app.get("/payment", (req, res) => {
@@ -148,6 +230,8 @@ app.get("/add-order/:table", (req, res) => {
     const cart = req.session.cart || [];
     const table = req.params.table;
     const menuData = JSON.stringify(cart);
+    console.log(cart)
+    console.log(menuData)
 
     const sql = `INSERT INTO orders (table_id, menu) VALUES (?, ?);`;
     db.run(sql, [table, menuData], (err) => {
@@ -158,9 +242,9 @@ app.get("/add-order/:table", (req, res) => {
         console.log(`Order placed for table ${table}`);
         req.session.cart = [];
         if (table === "0") {
-            res.redirect("/emphome");
+            res.redirect("/cashier");
         } else {
-            res.redirect("/");
+            res.redirect(`/orders/${table}`);
         }
     });
 });
@@ -183,12 +267,12 @@ app.get("/add-waiting-order/:table", (req, res) => {
         }
         console.log(`Waiting Order placed for table ${table}`);
         req.session.cart = [];
-        res.redirect("/");
+        res.redirect(`/orders/${table}`);
     });
 });
 
-app.get("/emphome", (req, res) => {
-    res.render("emphome");
+app.get("/cashier", (req, res) => {
+    res.render("cashier");
 });
 
 app.get("/manageMenu", (req, res) => {
