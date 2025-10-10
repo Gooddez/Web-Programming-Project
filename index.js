@@ -47,8 +47,8 @@ app.get("/api/waiting-order", (req, res) => {
         if (err) {
             console.log(err.message);
         }
-        console.log(rows.length)
-        console.log(rows)
+        console.log(rows.length);
+        console.log(rows);
         res.json(rows);
     });
 });
@@ -70,6 +70,23 @@ app.post("/api/detail", (req, res) => {
 app.post("/api/get-cart", (req, res) => {
     const cart = req.session.cart || [];
     res.json(cart);
+});
+
+app.put("/api/update-status/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const status = req.body.status;
+    console.log(id,status)
+    const sql = `UPDATE menu
+            SET status = ?
+            WHERE menu_id = ?`;
+    db.run(sql, [status, id], (err) => {
+        if (err) {
+            console.log(err.message);
+            res.json({ message: "Menu updated failed!" });
+        }
+        console.log("here")
+    });
+    res.json({ message: "Menu updated successfully!" });
 });
 
 app.get("/add-to-cart", (req, res) => {
@@ -129,17 +146,21 @@ app.get("/add-order/:table", (req, res) => {
         }
         console.log(`Order placed for table ${table}`);
         req.session.cart = [];
-        res.redirect("/");
+        if (table === "0") {
+            res.redirect("/emphome");
+        } else {
+            res.redirect("/");
+        }
     });
 });
 
 app.get("/add-waiting-order/:table", (req, res) => {
     const cart = req.session.cart || [];
     const table = req.params.table;
-    let price = 0
-    cart.forEach(item => {price += parseInt(item.totalPrice)})
-    
-
+    let price = 0;
+    cart.forEach((item) => {
+        price += parseInt(item.totalPrice);
+    });
     const sql = `INSERT INTO waitingOrder (table_id, menu, price) VALUES (?, ?, ?);`;
 
     const menuData = JSON.stringify(cart);
@@ -149,15 +170,24 @@ app.get("/add-waiting-order/:table", (req, res) => {
             console.error(err.message);
             return res.redirect("/");
         }
-        console.log(menuData)
         console.log(`Waiting Order placed for table ${table}`);
         req.session.cart = [];
-        res.redirect("/")
+        res.redirect("/");
     });
 });
 
 app.get("/emphome", (req, res) => {
     res.render("emphome");
+});
+
+app.get("/manageMenu", (req, res) => {
+    const endpoint = "http://localhost:3000/api/menus";
+    fetch(endpoint)
+        .then((response) => response.json())
+        .then((menus) => {
+            res.render("menuManagement", { menuData: menus });
+        })
+        .catch((err) => console.log(err));
 });
 
 app.get("/confirm", (req, res) => {

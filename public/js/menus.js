@@ -111,7 +111,7 @@ function showCart() {
     const cartIcon = document.getElementById("cart");
     const cart = document.getElementById("cart-container");
     cart.innerHTML = "";
-    console.log(window.location.origin)
+    console.log(window.location.origin);
     if (!cart.innerHTML) {
         cart.innerHTML += `<button class="close-cart-button" onclick="closeCart()">X</button><h1>ตะกร้าสินค้า</h1><div class="cart-item-container" id="cart-item-container"></div>`;
         const cartItemContainer = document.getElementById(
@@ -166,3 +166,14 @@ const closeCart = () => {
     const cart = document.getElementById("cart-container");
     cart.style.display = "none";
 };
+
+document.addEventListener("DOMContentLoaded", function () {
+    const id = localStorage.getItem("tableID");
+    console.log(id)
+    const body = document.body;
+    body.innerHTML += `<div class="table-id" id="table-id"><p>table : ${id}</p></div>`;
+    if (id === "0") {
+        const parent = document.getElementById("table-id");
+        parent.innerHTML += `<a href="/emphome"><div class="back-to-home-button">กลับหน้าหลัก</div></a>`;
+    }
+});

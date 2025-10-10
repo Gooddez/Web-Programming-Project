@@ -34,11 +34,10 @@
 
     <!-- <div class="header-gap"></div> -->
     
-    <section id=`${}` class="content">
+    <section class="content">
         <% menuData.forEach(menu=> { %>
-            <div class="menu-container" id="menu-container-<%= menu.menu_id %>"
-                onclick="showDetail('<%= menu.menu_id %>','<%= menu.menu_name %>','<%= menu.menu_price %>')">
-                <div class="status">In Stock</div>
+            <div class="menu-container" id="menu-container-<%= menu.menu_id %>" <% if (menu.status === 'available') { %>onclick="showDetail('<%= menu.menu_id %>','<%= menu.menu_name %>','<%= menu.menu_price %>')"<% } %>>
+                <div class="status"><%= menu.status %></div>
                 <img src="/image/<%= menu.menu_image %>" alt="<%= menu.menu_image %>">
                 <div class="text-container">
                     <span><%= menu.menu_name %></span>

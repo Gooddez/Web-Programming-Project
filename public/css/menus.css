@@ -24,6 +24,19 @@ body {
     align-items: center;
 }
 
+/* table id */
+
+.table-id {
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+}
+
+/* cashier */
+.back-to-home-button {
+    
+}
+
 /* Header */
 
 header {

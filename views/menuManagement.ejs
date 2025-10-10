@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table id=`${}` class="content">
+        <thead>
+            <th>Menu ID</th>
+            <th>Menu Name</th>
+            <th>Menu Status</th>
+            <th>Update Status</th>
+        </thead>
+        <tbody>
+            <% menuData.forEach(menu=> { %>
+                <tr>
+                    <td>
+                        <%= menu.menu_id %>
+                    </td>
+                    <td>
+                        <%= menu.menu_name %>
+                    </td>
+                    <td>
+                        <%= menu.status %>
+                    </td>
+                    <td><button onclick="updateStatus(<%= menu.menu_id %>,'<%= menu.status %>')">Change</button></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <a href="/emphome"><div class="back-to-home-button">กลับหน้าหลัก</div></a>
+</body>
+
+</html>
+
+<script>
+    function updateStatus(id, currentStatus) {
+        const endpoint = `${window.location.origin}/api/update-status/${id}`
+        const newStatus = currentStatus === "available" ? "unavailable" : "available"
+        console.log(id)
+        console.log(newStatus)
+        fetch(endpoint, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                status: newStatus
+            })
+        })
+            .then(response => response.json())
+            .then(data => window.location.reload())
+            .catch(error => console.error("Error:", error));
+    }
+</script>

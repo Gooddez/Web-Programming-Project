@@ -72,8 +72,11 @@
     function confirmCash() {
         const table = localStorage.getItem("tableID");
         if (table) {
-            console.log('here')
-            window.location.href = `/add-waiting-order/${table}`;
+            if (table === "0") {
+                window.location.href = `/add-order/${table}`;
+            } else {
+                window.location.href = `/add-waiting-order/${table}`;
+            }
         } else {
             alert("No table ID found!");
         }
