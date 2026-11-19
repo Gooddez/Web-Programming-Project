@@ -93,6 +93,28 @@ function showDetail(id, name, price) {
                     priceContainer.innerText = `Price: ${totalPrice} THB`;
                     newPrice.value = totalPrice;
                 });
+
+                form.addEventListener("submit", (event) => {
+                    event.preventDefault()
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+                    console.log(data);
+                    const endpoint = "http://localhost:3000/api/add-to-cart"
+                    fetch(endpoint, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => response.json())
+                    .then(res => {
+                        detail.style.display = "none";
+                        form.innerHTML = "";
+                    })
+                    .catch(err => console.log(err))
+                });
+
                 detail.addEventListener("click", (event) => {
                     console.log(event.target)
                     // if clicked outside the popup content

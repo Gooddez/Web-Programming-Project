@@ -96,11 +96,12 @@ const generateCartItemId = (menu_id, options) => {
     return `${menu_id}-${optionKeys}`;
 };
 
-app.get("/add-to-cart", (req, res) => {
-    const all = req.query;
+app.post("/api/add-to-cart", (req, res) => {
+    const all = req.body;
     if (!req.session.cart) {
         req.session.cart = [];
     }
+    console.log(all)
 
     // Process options from the query
     const options = [];
@@ -139,7 +140,7 @@ app.get("/add-to-cart", (req, res) => {
             quantity: 1
         });
     }
-    res.redirect("/menus");
+    res.json({message: "success"})
 });
 
 // NEW ROUTE: To update item quantity
@@ -344,5 +345,7 @@ app.listen(port, (err) => {
     if (err) {
         console.log(err);
     }
-    console.log(`Server is running at http://localhost:${port}`);
+    console.log(`Server is running at PORT : ${port}`);
+    console.log(`Setup device for cashier and customer at http://localhost:${port}/setup.html`);
+    console.log(`Set ID to "0" for cashier, 1 or more for customer`);
 });
